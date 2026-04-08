@@ -17,7 +17,7 @@ namespace MySecureBackend.WebApi.Repositories
         {
             using (var sqlConnection = new SqlConnection(sqlConnectionString))
             {
-                await sqlConnection.ExecuteAsync("INSERT INTO [Object] (ObjGuid, ObjName, PrefabId, PositionX, PositionY, ScaleX, ScaleY, RotationZ, SortingLayer, EnvGuid) VALUES (@ObjGuid, @ObjName, @PrefabId, @PositionX, @PositionY, @ScaleX, @ScaleY, @RotationZ, @SortingLayer, @EnvGuid)", objectRepo);
+                await sqlConnection.ExecuteAsync("INSERT INTO [Object] (ObjGuid, PrefabId, PositionX, PositionY, ScaleX, ScaleY, RotationZ, SortingLayer, EnvGuid) VALUES (@ObjGuid, @PrefabId, @PositionX, @PositionY, @ScaleX, @ScaleY, @RotationZ, @SortingLayer, @EnvironmentGuid)", objectRepo);
             }
         }
 
@@ -25,7 +25,7 @@ namespace MySecureBackend.WebApi.Repositories
         {
             using (var sqlConnection = new SqlConnection(sqlConnectionString))
             {
-                return await sqlConnection.QuerySingleOrDefaultAsync<ObjectRepo>("SELECT * FROM [Object] WHERE ObjGuid = @ObjGuid", new { ObjGuid });
+                return await sqlConnection.QuerySingleOrDefaultAsync<ObjectRepo>("SELECT ObjGuid, PrefabId, PositionX, PositionY, ScaleX, ScaleY, RotationZ, SortingLayer, EnvGuid AS EnvironmentGuid FROM [Object] WHERE ObjGuid = @ObjGuid", new { ObjGuid });
             }
         }
 
@@ -33,7 +33,7 @@ namespace MySecureBackend.WebApi.Repositories
         {
             using (var sqlConnection = new SqlConnection(sqlConnectionString))
             {
-                return await sqlConnection.QueryAsync<ObjectRepo>("SELECT * FROM [Object]");
+                return await sqlConnection.QueryAsync<ObjectRepo>("SELECT ObjGuid, PrefabId, PositionX, PositionY, ScaleX, ScaleY, RotationZ, SortingLayer, EnvGuid AS EnvironmentGuid FROM [Object]");
             }
         }
 
@@ -42,17 +42,15 @@ namespace MySecureBackend.WebApi.Repositories
             using (var sqlConnection = new SqlConnection(sqlConnectionString))
             {
                 await sqlConnection.ExecuteAsync("UPDATE [Object] SET " +
-                                                 "ObjName = @ObjName, " +
-                                                 "PrefabId = @PrefabId " +
-                                                 "PositionX = @PositionX " +
-                                                 "PositionY = @PositionY " +
-                                                 "ScaleX = @ScaleX " +
-                                                 "ScaleY = @ScaleY " +
-                                                 "RotationZ = @RotationZ " +
-                                                 "SortingLayer = @SortingLayer " +
-                                                 "EnvGuid = @EnvGuid " +
+                                                 "PrefabId = @PrefabId, " +
+                                                 "PositionX = @PositionX, " +
+                                                 "PositionY = @PositionY, " +
+                                                 "ScaleX = @ScaleX, " +
+                                                 "ScaleY = @ScaleY, " +
+                                                 "RotationZ = @RotationZ, " +
+                                                 "SortingLayer = @SortingLayer, " +
+                                                 "EnvGuid = @EnvironmentGuid " +
                                                  "WHERE ObjGuid = @ObjGuid", objectRepo);
-
             }
         }
 
@@ -60,7 +58,7 @@ namespace MySecureBackend.WebApi.Repositories
         {
             using (var sqlConnection = new SqlConnection(sqlConnectionString))
             {
-                return await sqlConnection.QueryAsync<ObjectRepo>("SELECT * FROM [Object] WHERE EnvGuid = @EnvGuid", new { EnvGuid });
+                return await sqlConnection.QueryAsync<ObjectRepo>("SELECT ObjGuid, PrefabId, PositionX, PositionY, ScaleX, ScaleY, RotationZ, SortingLayer, EnvGuid AS EnvironmentGuid FROM [Object] WHERE EnvGuid = @EnvGuid", new { EnvGuid });
             }
         }
 
