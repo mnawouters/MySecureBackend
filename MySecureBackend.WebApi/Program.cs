@@ -62,11 +62,8 @@ builder.Services.AddTransient<IAuthenticationService, AspNetIdentityAuthenticati
 // By default, use an in-memory repository for example objects.
 //builder.Services.AddTransient<IExampleObjectRepository, MemoryExampleObjectRepository>();
 
-// Register the environment repository so DI can resolve IEnvironmentRepository
-builder.Services.AddTransient<IEnvironmentRepository, SqlEnvironmentRepository>(o => new SqlEnvironmentRepository(sqlConnectionString!));
-
-// To use a SQL-backed repository instead, uncomment the following line:
-builder.Services.AddTransient<IExampleObjectRepository, SqlExampleObjectRepository>(o => new SqlExampleObjectRepository(sqlConnectionString!));
+builder.Services.AddTransient<IEnvironmentRepository, SqlEnvironmentRepository>(o => new SqlEnvironmentRepository(sqlConnectionString!);
+builder.Services.AddTransient<IObjectRepository, SqlObjectRepository>(o => new SqlObjectRepository(sqlConnectionString!));
 
 var app = builder.Build();
 
@@ -96,6 +93,8 @@ else
 
 // Enforce HTTPS for all requests.
 app.UseHttpsRedirection();
+
+app.UseCors("UnityPolicy");
 
 // Enable authorization middleware.
 app.UseAuthorization();
