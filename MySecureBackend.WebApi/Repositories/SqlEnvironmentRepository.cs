@@ -25,7 +25,7 @@ namespace MySecureBackend.WebApi.Repositories
         {
             using (var sqlConnection = new SqlConnection(sqlConnectionString))
             {
-                return await sqlConnection.QuerySingleOrDefaultAsync<EnvironmentObject>("SELECT * FROM [Environment2D] WHERE EnvGuid = @EnvGuid", new { EnvGuid = EnvGuid.ToString() });
+                return await sqlConnection.QuerySingleOrDefaultAsync<EnvironmentObject>("SELECT EnvGuid, EnvName AS Name, MaxHeight, MaxLenght, Id AS UserId FROM [Environment2D] WHERE EnvGuid = @EnvGuid", new { EnvGuid = EnvGuid.ToString() });
             }
         }
 
@@ -33,7 +33,7 @@ namespace MySecureBackend.WebApi.Repositories
         {
             using (var sqlConnection = new SqlConnection(sqlConnectionString))
             {
-                return await sqlConnection.QueryAsync<EnvironmentObject>("SELECT * FROM [Environment2D]");
+                return await sqlConnection.QueryAsync<EnvironmentObject>("SELECT EnvGuid, EnvName AS Name, MaxHeight, MaxLenght, Id AS UserId FROM [Environment2D]");
             }
         }
 
@@ -41,7 +41,7 @@ namespace MySecureBackend.WebApi.Repositories
         {
             using (var sqlConnection = new SqlConnection(sqlConnectionString))
             {
-                return await sqlConnection.QueryAsync<EnvironmentObject>("SELECT * FROM [Environment2D] WHERE Id = @Id", new { Id });
+                return await sqlConnection.QueryAsync<EnvironmentObject>("SELECT EnvGuid, EnvName AS Name, MaxHeight, MaxLenght, Id AS UserId FROM [Environment2D] WHERE Id = @Id", new { Id });
             }
         }
 
