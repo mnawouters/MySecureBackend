@@ -71,5 +71,12 @@ namespace MySecureBackend.WebApi.Repositories
                 await sqlConnection.ExecuteAsync("DELETE FROM [Object] WHERE ObjGuid = @ObjGuid", new { ObjGuid });
             }
         }
-    }
+
+        public async Task DeleteEnvAsync(Guid EnvGuid)
+        {
+            using (var sqlConnection = new SqlConnection(sqlConnectionString))
+            {
+                await sqlConnection.ExecuteAsync("DELETE FROM [Object] WHERE EnvGuid = @EnvGuid", new { EnvGuid });
+            }
+        }
 }
