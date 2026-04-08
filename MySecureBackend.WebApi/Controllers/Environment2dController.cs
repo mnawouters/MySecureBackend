@@ -57,7 +57,7 @@ namespace MySecureBackend.WebApi.Controllers;
             if (activeEnvironments.Count() >= 5)
                 return BadRequest(new ProblemDetails { Detail = "Maximum werelden van 5 is behaald!" });
 
-            if (activeEnvironments.Any(env => env.EnvName == environmentObject.EnvName))
+            if (activeEnvironments.Any(env => env.Name == environmentObject.Name))
                 return BadRequest(new ProblemDetails { Detail = "Je kan niet 2 werelden met dezelfde naam maken!" });
 
             environmentObject.EnvGuid = Guid.NewGuid();

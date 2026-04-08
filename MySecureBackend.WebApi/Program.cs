@@ -28,15 +28,15 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.Configure<RouteOptions>(o => o.LowercaseUrls = true);
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("UnityPolicy", policy =>
-    {
-        policy.WithOrigins("")
-              .AllowAnyHeader()
-              .AllowAnyMethod();
-    });
-});
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("UnityPolicy", policy =>
+//    {
+//        policy.WithOrigins("")
+//              .AllowAnyHeader()
+//              .AllowAnyMethod();
+//    });
+//});
 
 // Register authorization services for securing endpoints.
 builder.Services.AddAuthorization();
