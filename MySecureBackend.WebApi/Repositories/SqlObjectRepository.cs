@@ -56,6 +56,14 @@ namespace MySecureBackend.WebApi.Repositories
             }
         }
 
+        public async Task<IEnumerable<ObjectRepo>> SelectByEnvironmentAsync(Guid EnvGuid)
+        {
+            using (var sqlConnection = new SqlConnection(sqlConnectionString))
+            {
+                return await sqlConnection.QueryAsync<ObjectRepo>("SELECT * FROM [Object] WHERE EnvGuid = @EnvGuid", new { EnvGuid });
+            }
+        }
+
         public async Task DeleteAsync(Guid ObjGuid)
         {
             using (var sqlConnection = new SqlConnection(sqlConnectionString))

@@ -37,7 +37,7 @@ namespace MySecureBackend.WebApi.Repositories
             }
         }
 
-        public async Task<IEnumerable<EnvironmentObject>> SelectByIdAsync(string Id)
+        public async Task<IEnumerable<EnvironmentObject>> SelectUserAsync(string Id)
         {
             using (var sqlConnection = new SqlConnection(sqlConnectionString))
             {
