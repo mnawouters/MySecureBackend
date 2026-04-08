@@ -25,7 +25,7 @@ namespace MySecureBackend.WebApi.Repositories
         {
             using (var sqlConnection = new SqlConnection(sqlConnectionString))
             {
-                return await sqlConnection.QuerySingleOrDefaultAsync<EnvironmentObject>("SELECT * FROM [Environment2D] WHERE EnvGuid = @EnvGuid", new { EnvGuid });
+                return await sqlConnection.QuerySingleOrDefaultAsync<EnvironmentObject>("SELECT * FROM [Environment2D] WHERE EnvGuid = @EnvGuid", new { EnvGuid = EnvGuid.ToString() });
             }
         }
 
@@ -34,6 +34,14 @@ namespace MySecureBackend.WebApi.Repositories
             using (var sqlConnection = new SqlConnection(sqlConnectionString))
             {
                 return await sqlConnection.QueryAsync<EnvironmentObject>("SELECT * FROM [Environment2D]");
+            }
+        }
+
+        public async Task<IEnumerable<EnvironmentObject>> SelectByIdAsync(string Id)
+        {
+            using (var sqlConnection = new SqlConnection(sqlConnectionString))
+            {
+                return await sqlConnection.QueryAsync<EnvironmentObject>("SELECT * FROM [Environment2D] WHERE Id = @Id", new { Id });
             }
         }
 
