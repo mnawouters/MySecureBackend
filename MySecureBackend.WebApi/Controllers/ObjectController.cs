@@ -39,7 +39,7 @@ namespace MySecureBackend.WebApi.Controllers;
         }
 
         [HttpGet("environment/{environmentId}", Name = "GetObjectByEnvironment")]
-        public async Task<ActionResult<IEnumerable<Object2D>>> GetByEnvironmentAsync(Guid environmentId)
+        public async Task<ActionResult<IEnumerable<ObjectRepo>>> GetByEnvironmentAsync(Guid environmentId)
         {
             var objects = await _ObjectRepository.SelectByEnvironmentAsync(environmentId);
             return Ok(objects);

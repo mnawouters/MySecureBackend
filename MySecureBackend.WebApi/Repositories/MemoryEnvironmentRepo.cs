@@ -1,8 +1,8 @@
-﻿using MySecureBackend.WebApi.Models;
+using MySecureBackend.WebApi.Models;
 
 namespace MySecureBackend.WebApi.Repositories
 {
-    public class MemoryExampleObjectRepository : IEnvironmentRepository
+    public class MemoryEnvironmentRepository : IEnvironmentRepository
     {
         private static List<EnvironmentObject> Environments = [];
 
@@ -33,10 +33,10 @@ namespace MySecureBackend.WebApi.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task UpdateAsync(ExampleObject exampleObject)
+        public async Task UpdateAsync(EnvironmentObject environmentObject)
         {
-            await DeleteAsync(exampleObject.Id);
-            await InsertAsync(exampleObject);
+            await DeleteAsync(environmentObject.EnvGuid);
+            await InsertAsync(environmentObject);
         }
     }
 }
