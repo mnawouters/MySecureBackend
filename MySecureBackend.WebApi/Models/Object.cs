@@ -31,5 +31,8 @@ namespace MySecureBackend.WebApi.Models
 
         [Required]
         public Guid EnvironmentGuid { get; set; }
+
+        [Required, MaxLength(25)]
+        public string ObjName { get; set; }
     }
 }
