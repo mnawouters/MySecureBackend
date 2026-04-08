@@ -17,7 +17,7 @@ namespace MySecureBackend.WebApi.Repositories
         {
             using (var sqlConnection = new SqlConnection(sqlConnectionString))
             {
-                await sqlConnection.ExecuteAsync("INSERT INTO [Environment2D] (EnvGuid, EnvName, MaxHeight, MaxLenght, Id) " + "VALUES (@EnvGuid, @EnvName, @MaxHeight, @MaxLenght, @Id)", environmentObject);
+                await sqlConnection.ExecuteAsync("INSERT INTO [Environment2D] (EnvGuid, EnvName, MaxHeight, MaxLenght, Id) " + "VALUES (@EnvGuid, @Name, @MaxHeight, @MaxLenght, @UserId)", environmentObject);
             }
         }
 
@@ -50,12 +50,11 @@ namespace MySecureBackend.WebApi.Repositories
             using (var sqlConnection = new SqlConnection(sqlConnectionString))
             {
                 await sqlConnection.ExecuteAsync("UPDATE [Environment2D] SET " +
-                                                 "EnvName = @EnvName, " +
-                                                 "MaxHeight = @MaxHeight " +
-                                                 "MaxLenght = @MaxLenght " +
-                                                 "Id = @Id " +
+                                                 "EnvName = @Name, " +
+                                                 "MaxHeight = @MaxHeight, " +
+                                                 "MaxLenght = @MaxLenght, " +
+                                                 "Id = @UserId " +
                                                  "WHERE EnvGuid = @EnvGuid", environmentObject);
-
             }
         }
 
