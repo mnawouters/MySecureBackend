@@ -62,7 +62,7 @@ builder.Services.AddTransient<IAuthenticationService, AspNetIdentityAuthenticati
 // By default, use an in-memory repository for example objects.
 //builder.Services.AddTransient<IExampleObjectRepository, MemoryExampleObjectRepository>();
 
-builder.Services.AddTransient<IEnvironmentRepository, SqlEnvironmentRepository>(o => new SqlEnvironmentRepository(sqlConnectionString!);
+builder.Services.AddTransient<IEnvironmentRepository, SqlEnvironmentRepository>(o => new SqlEnvironmentRepository(sqlConnectionString!));
 builder.Services.AddTransient<IObjectRepository, SqlObjectRepository>(o => new SqlObjectRepository(sqlConnectionString!));
 
 var app = builder.Build();
