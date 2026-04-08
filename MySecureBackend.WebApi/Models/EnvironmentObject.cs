@@ -19,6 +19,6 @@ namespace MySecureBackend.WebApi.Models
         public int MaxLenght { get; set; }
 
         [ValidateNever]
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
     }
 }

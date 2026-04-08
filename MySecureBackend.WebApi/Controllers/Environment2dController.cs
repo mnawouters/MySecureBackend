@@ -27,7 +27,7 @@ namespace MySecureBackend.WebApi.Controllers;
         {
             var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
-            if (string.IsNullOrEmpty(userIdClaim))
+            if (string.IsNullOrEmpty(userIdString))
                 return Unauthorized("Niet geautoriseerd");
 
             var enviroment2D = await _Environment2dRepository.SelectUserAsync(userIdString);
@@ -94,7 +94,7 @@ namespace MySecureBackend.WebApi.Controllers;
 
             var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
-            if (environmentObject.UserId != userGuid)
+            if (environmentObject.UserId != userIdString)
             {
                 return Forbid();
             }
