@@ -17,7 +17,7 @@ namespace MySecureBackend.WebApi.Repositories
         {
             using (var sqlConnection = new SqlConnection(sqlConnectionString))
             {
-                await sqlConnection.ExecuteAsync("INSERT INTO [Environment2D] (EnvGuid, EnvName, MaxHeight, MaxLenght, Id) VALUES (@EnvGuid, @EnvName, @MaxHeight, @MaxLenght, @Id)", environmentObject);
+                await sqlConnection.ExecuteAsync("INSERT INTO [Environment2D] (EnvGuid, EnvName, MaxHeight, MaxLenght, Id) " + "VALUES (@EnvGuid, @EnvName, @MaxHeight, @MaxLenght, @Id)", environmentObject);
             }
         }
 

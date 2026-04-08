@@ -1,10 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace MySecureBackend.WebApi.Models
 {
     public class EnvironmentObject
     {
+        [Required]
         public Guid EnvGuid { get; set; }
 
         [Required, MaxLength(25)]
@@ -16,7 +18,7 @@ namespace MySecureBackend.WebApi.Models
         [Range(20, 200)]
         public int MaxLenght { get; set; }
 
-        [Required]
-        public Guid Id { get; set; }
+        [ValidateNever]
+        public Guid UserId { get; set; }
     }
 }

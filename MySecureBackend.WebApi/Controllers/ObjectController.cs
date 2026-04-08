@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MySecureBackend.WebApi.Models;
 using MySecureBackend.WebApi.Repositories;
+using MySecureBackend.WebApi.Services;
 
-namespace MySecureBackend.WebApi.Controllers
-{
+namespace MySecureBackend.WebApi.Controllers;
 
     [ApiController]
     [Route("[controller]")]
@@ -37,6 +36,13 @@ namespace MySecureBackend.WebApi.Controllers
                 return NotFound(new ProblemDetails { Detail = $"object {ObjectId} not found" });
 
             return Ok(objectRepo);
+        }
+
+        [HttpGet("environment/{environmentId}", Name = "GetObjectByEnvironment")]
+        public async Task<ActionResult<IEnumerable<Object2D>>> GetByEnvironmentAsync(Guid environmentId)
+        {
+            var objects = await _ObjectRepository.SelectByEnvironmentAsync(environmentId);
+            return Ok(objects);
         }
 
         [HttpPost(Name = "AddObject")]
@@ -78,4 +84,3 @@ namespace MySecureBackend.WebApi.Controllers
             return Ok();
         }
     }
-}

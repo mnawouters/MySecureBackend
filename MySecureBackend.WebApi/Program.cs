@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Dapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi;
 using MySecureBackend.WebApi.Repositories;
 using MySecureBackend.WebApi.Services;
+using System.Data;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,6 +27,16 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.Configure<RouteOptions>(o => o.LowercaseUrls = true);
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("UnityPolicy", policy =>
+    {
+        policy.WithOrigins("")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 // Register authorization services for securing endpoints.
 builder.Services.AddAuthorization();

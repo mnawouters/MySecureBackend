@@ -3,8 +3,7 @@ using MySecureBackend.WebApi.Models;
 using MySecureBackend.WebApi.Repositories;
 using MySecureBackend.WebApi.Services;
 
-namespace MySecureBackend.WebApi.Controllers
-{
+namespace MySecureBackend.WebApi.Controllers;
 
     [ApiController]
     [Route("[controller]")]
@@ -12,86 +11,73 @@ namespace MySecureBackend.WebApi.Controllers
     [Produces("application/json")]
     public class Environment2dController : ControllerBase
     {
-        //comment om te confirmen dat ik terug op de master branch ben
-        //comment na de secrects in github fixen
-        //Nieuwe comment om te pushen
         private readonly IEnvironmentRepository _Environment2dRepository;
+        private readonly IObjectRepository _ObjectRepository;
         private readonly IAuthenticationService _envAuthenticationService;
 
-        public Environment2dController(IEnvironmentRepository EnvironmentRepository, IAuthenticationService envAuthenticationService)
+        public Environment2dController(IEnvironmentRepository EnvironmentRepository, IObjectRepository ObjectRepository, IAuthenticationService envAuthenticationService)
         {
             _Environment2dRepository = EnvironmentRepository;
+            _ObjectRepository = ObjectRepository;
             _envAuthenticationService = envAuthenticationService;
         }
 
         [HttpGet(Name = "GetEnvironment2Ds")]
         public async Task<ActionResult<List<EnvironmentObject>>> GetAsync()
         {
-            var userIdString = _envAuthenticationService.GetCurrentAuthenticatedUserId();
-            if (string.IsNullOrWhiteSpace(userIdString) || !Guid.TryParse(userIdString, out var userGuid))
-                return Unauthorized();
+            var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
-            var environmentObjects = await _Environment2dRepository.SelectAsync();
-            var userEnvironments = environmentObjects.Where(e => e.Id == userGuid).ToList();
+            if (string.IsNullOrEmpty(userIdClaim))
+                return Unauthorized("Niet geautoriseerd");
 
-            return Ok(userEnvironments);
+            var enviroment2D = await _Environment2dRepository.SelectUserAsync(userIdString);
+            return Ok(enviroment2D);
         }
 
         [HttpGet("{environmentObjectId}", Name = "GetEnvironmentObjectById")]
         public async Task<ActionResult<EnvironmentObject>> GetByIdAsync(Guid environmentObjectId)
         {
-            var userIdString = _envAuthenticationService.GetCurrentAuthenticatedUserId();
-            if (string.IsNullOrWhiteSpace(userIdString) || !Guid.TryParse(userIdString, out var userGuid))
-                return Unauthorized();
+            var enviroment2D = await _Environment2dRepository.SelectAsync(environmentObjectId);
 
-            var environmentObject = await _Environment2dRepository.SelectAsync(environmentObjectId);
+            if (enviroment2D == null)
+                return NotFound(new ProblemDetails { Detail = $"Environment {environmentObjectId} not found." });
 
-            if (environmentObject == null)
-                return NotFound(new ProblemDetails { Detail = $"environmentObject {environmentObjectId} not found" });
-
-            if (environmentObject.Id != userGuid)
-                return Forbid();
-
-            return Ok(environmentObject);
+            return Ok(enviroment2D);
         }
 
         [HttpPost(Name = "AddEvironmentObject")]
         public async Task<ActionResult<EnvironmentObject>> AddAsync(EnvironmentObject environmentObject)
         {
-            var userIdString = _envAuthenticationService.GetCurrentAuthenticatedUserId();
-            if (string.IsNullOrWhiteSpace(userIdString) || !Guid.TryParse(userIdString, out var userGuid))
-                return Unauthorized();
+            var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdString))
+                return Unauthorized("Niet geautoriseerd!");
+
+            var activeEnvironments = await _Environment2dRepository.SelectUserAsync(userIdString);
+            if (activeEnvironments.Count() >= 5)
+                return BadRequest(new ProblemDetails { Detail = "Maximum werelden van 5 is behaald!" });
+
+            if (activeEnvironments.Any(env => env.EnvName == environmentObject.EnvName))
+                return BadRequest(new ProblemDetails { Detail = "Je kan niet 2 werelden met dezelfde naam maken!" });
 
             environmentObject.EnvGuid = Guid.NewGuid();
-            // ensure the environment is linked to the currently authenticated user
-            environmentObject.Id = userGuid;
+            environmentObject.UserId = userIdString;
 
             await _Environment2dRepository.InsertAsync(environmentObject);
 
-            return CreatedAtRoute("GetEnvironmentObjectById", new { environmentObjectId = environmentObject.EnvGuid }, environmentObject);
-        }
+            return CreatedAtRoute("GetEnviromentObject", new { enviroment2dId = environmentObject.EnvGuid }, environmentObject);
+    }
 
         [HttpPut("{environmentObjectId}", Name = "UpdateEnvironmentObject")]
         public async Task<ActionResult<EnvironmentObject>> UpdateAsync(Guid environmentObjectId, EnvironmentObject environmentObject)
         {
-            var userIdString = _envAuthenticationService.GetCurrentAuthenticatedUserId();
-            if (string.IsNullOrWhiteSpace(userIdString) || !Guid.TryParse(userIdString, out var userGuid))
-                return Unauthorized();
+            var enviroment = await _Environment2dRepository.SelectAsync(environmentObjectId);
 
-            var existingEnvironmentObject = await _Environment2dRepository.SelectAsync(environmentObjectId);
-
-            if (existingEnvironmentObject == null)
-                return NotFound(new ProblemDetails { Detail = $"EnvironmentObject {environmentObjectId} not found" });
-
-            // Only allow updates by the owner
-            if (existingEnvironmentObject.Id != userGuid)
-                return Forbid();
+            if (enviroment == null)
+                return NotFound(new ProblemDetails { Detail = $"Environment {environmentObjectId} not found." });
 
             if (environmentObject.EnvGuid != environmentObjectId)
-                return Conflict(new ProblemDetails { Detail = "The id of the EnvironmentObject in the route does not match the id of the EnvironmentObject in the body" });
-
-            // Prevent changing the owner — enforce the owner to remain the authenticated user
-            environmentObject.Id = existingEnvironmentObject.Id;
+                return Conflict(new ProblemDetails { Detail = "De id van de environment is niet gelijk aan de huidige id." });
 
             await _Environment2dRepository.UpdateAsync(environmentObject);
 
@@ -101,21 +87,21 @@ namespace MySecureBackend.WebApi.Controllers
         [HttpDelete("{environmentObjectId}", Name = "DeleteEnvironmentObject")]
         public async Task<ActionResult> DeleteAsync(Guid environmentObjectId)
         {
-            var userIdString = _envAuthenticationService.GetCurrentAuthenticatedUserId();
-            if (string.IsNullOrWhiteSpace(userIdString) || !Guid.TryParse(userIdString, out var userGuid))
-                return Unauthorized();
-
             var environmentObject = await _Environment2dRepository.SelectAsync(environmentObjectId);
 
             if (environmentObject == null)
                 return NotFound(new ProblemDetails { Detail = $"EnvironmentObject {environmentObjectId} not found" });
 
-            if (environmentObject.Id != userGuid)
-                return Forbid();
+            var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
+            if (environmentObject.UserId != userGuid)
+            {
+                return Forbid();
+            }
+
+            await _ObjectRepository.DeleteEnvAsync(environmentObjectId);
             await _Environment2dRepository.DeleteAsync(environmentObjectId);
 
             return Ok();
         }
     }
-}
