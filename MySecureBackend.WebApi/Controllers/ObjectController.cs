@@ -13,11 +13,13 @@ namespace MySecureBackend.WebApi.Controllers;
     {
         private readonly IObjectRepository _ObjectRepository;
         private readonly IAuthenticationService _objAuthenticationService;
+        private readonly IEnvironmentRepository _Environment2dRepository;
 
-        public ObjectController(IObjectRepository ObjectRepository, IAuthenticationService objAuthenticationService)
+        public ObjectController(IObjectRepository ObjectRepository, IEnvironmentRepository environmentRepository, IAuthenticationService objAuthenticationService)
         {
             _ObjectRepository = ObjectRepository;
             _objAuthenticationService = objAuthenticationService;
+        _Environment2dRepository = environmentRepository;
         }
 
         [HttpGet(Name = "GetObject2Ds")]
@@ -41,8 +43,21 @@ namespace MySecureBackend.WebApi.Controllers;
         [HttpGet("environment/{environmentId}", Name = "GetObjectByEnvironment")]
         public async Task<ActionResult<IEnumerable<ObjectRepo>>> GetByEnvironmentAsync(Guid environmentId)
         {
+            var userIdString = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdString))
+                return Unauthorized("Niet geautoriseerd");
+
+            var environment = await _Environment2dRepository.SelectAsync(environmentId);
+
+            if (environment == null)
+                return NotFound(new ProblemDetails { Detail = $"Environment {environmentId} not found." });
+
+            if (environment.UserId != userIdString)
+                return Forbid();
+
             var objects = await _ObjectRepository.SelectByEnvironmentAsync(environmentId);
-            return Ok(objects);
+                return Ok(objects);
         }
 
         [HttpPost(Name = "AddObject")]
